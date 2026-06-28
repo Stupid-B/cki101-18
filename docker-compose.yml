@@ -8,4 +8,24 @@ services:
     container_name: flask-app-container
     ports:
       - "80:5000"
+    environment:
+      - DB_HOST=mysql.cki101
+      - DB_PORT=3306
+      - DB_USER=root
+      - DB_PASSWORD=dkjp6d93
+      - DB_NAME=cki101_db
+    depends_on:
+      - db
+    restart: always
+
+  db:
+    image: mysql:8.4
+    container_name: mysql.cki101
+    ports:
+      - "8625:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: dkjp6d93
+      MYSQL_DATABASE: cki101_db
+    volumes:
+      - ./db_data:/var/lib/mysql
     restart: always

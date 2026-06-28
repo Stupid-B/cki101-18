@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>我是功能一 - 用戶管理系統</title>
+    <!-- Import Google Fonts (Outfit & Noto Sans TC) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&family=Outfit:wght@300;400;500;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-color: #0b0f19;
+            --card-bg: rgba(22, 28, 45, 0.4);
+            --card-border: rgba(255, 255, 255, 0.08);
+            --text-primary: #f3f4f6;
+            --text-secondary: #9ca3af;
+            --accent-primary: #8b5cf6;
+            --accent-secondary: #6366f1;
+            --accent-hover: #a78bfa;
+            --success: #10b981;
+            --danger: #ef4444;
+            --font-main: 'Outfit', 'Noto Sans TC', sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(139, 92, 246, 0.15) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(99, 102, 241, 0.15) 0px, transparent 50%);
+            background-attachment: fixed;
+            color: var(--text-primary);
+            font-family: var(--font-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2rem 1rem;
+            overflow-x: hidden;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 900px;
+            display: flex;
+            flex-direction: column;
+            gap: 2.5rem;
+            z-index: 10;
+        }
+
+        /* Hero Header */
+        header {
+            text-align: center;
+            margin-top: 1rem;
+        }
+
+        .badge {
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            padding: 0.4rem 1rem;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            letter-spacing: 1px;
+            display: inline-block;
+            margin-bottom: 1rem;
+            box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
+            text-transform: uppercase;
+        }
+
+        h1 {
+            font-size: 3.5rem;
+            font-weight: 700;
+            background: linear-gradient(to right, #ffffff, #a5b4fc, #818cf8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+            letter-spacing: -1px;
+            filter: drop-shadow(0 2px 8px rgba(99, 102, 241, 0.2));
+        }
+
+        header p {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            font-weight: 300;
+        }
+
+        /* Glassmorphic Grid */
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+        }
+
+        @media (min-width: 768px) {
+            .grid {
+                grid-template-columns: 1fr 1.5fr;
+            }
+        }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 24px;
+            padding: 2rem;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            border-color: rgba(139, 92, 246, 0.25);
+            box-shadow: 0 15px 35px rgba(139, 92, 246, 0.1);
+        }
+
+        .card-title {
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #ffffff;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            padding-bottom: 0.75rem;
+        }
+
+        /* Form Styling */
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        label {
+            display: block;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        input {
+            width: 100%;
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 0.85rem 1rem;
+            color: var(--text-primary);
+            font-family: var(--font-main);
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--accent-primary);
+            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2);
+            background: rgba(15, 23, 42, 0.8);
+        }
+
+        button {
+            width: 100%;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            color: #ffffff;
+            border: none;
+            border-radius: 12px;
+            padding: 1rem;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            margin-top: 0.5rem;
+            box-shadow: 0 4px 15px rgba(139, 92, 246, 0.2);
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(139, 92, 246, 0.4);
+            background: linear-gradient(135deg, var(--accent-hover), var(--accent-secondary));
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        /* Search Section */
+        .search-container {
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+
+        .search-container input {
+            padding-right: 2.5rem;
+        }
+
+        .search-icon {
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+            pointer-events: none;
+        }
+
+        /* User List / Grid */
+        .user-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            max-height: 400px;
+            overflow-y: auto;
+            padding-right: 0.25rem;
+        }
+
+        .user-list::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .user-list::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .user-list::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+
+        .user-list::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.25);
+        }
+
+        .user-item {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 14px;
+            padding: 1rem 1.25rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+            animation: fadeIn 0.4s ease forwards;
+        }
+
+        .user-item:hover {
+            background: rgba(255, 255, 255, 0.06);
+            transform: translateX(4px);
+            border-color: rgba(139, 92, 246, 0.15);
+        }
+
+        .user-info {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .user-name {
+            font-weight: 600;
+            color: #ffffff;
+            font-size: 1.1rem;
+        }
+
+        .user-age {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.2), rgba(99, 102, 241, 0.2));
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            color: var(--accent-primary);
+        }
+
+        .flex-row {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        /* Delete Button */
+        .delete-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            width: auto;
+            margin-top: 0;
+            padding: 0.5rem;
+            border-radius: 8px;
+            box-shadow: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .delete-btn:hover {
+            color: var(--danger);
+            background: rgba(239, 68, 68, 0.1);
+            transform: scale(1.08);
+            box-shadow: none;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            color: var(--text-secondary);
+            padding: 2rem 0;
+            font-style: italic;
+        }
+
+        /* Alert / Toast */
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            background: #1e293b;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            z-index: 100;
+            transform: translateY(150%);
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .toast.show {
+            transform: translateY(0);
+        }
+
+        .toast-success {
+            border-left: 4px solid var(--success);
+        }
+
+        .toast-error {
+            border-left: 4px solid var(--danger);
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Hero Header -->
+        <header>
+            <span class="badge">Feature One</span>
+            <h1>我是功能一</h1>
+            <p>簡單、優雅且具備 Docker 封裝與 MySQL 資料保留的 Web 用戶管理系統</p>
+        </header>
+
+        <div class="grid">
+            <!-- Add User Section -->
+            <div class="card">
+                <div class="card-title">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/>
+                    </svg>
+                    新增用戶
+                </div>
+                <form id="addUserForm">
+                    <div class="form-group">
+                        <label for="name">姓名</label>
+                        <input type="text" id="name" placeholder="請輸入姓名" required autocomplete="off">
+                    </div>
+                    <div class="form-group">
+                        <label for="age">年紀</label>
+                        <input type="number" id="age" placeholder="請輸入年紀" required min="1" max="150">
+                    </div>
+                    <button type="submit">確認新增</button>
+                </form>
+            </div>
+
+            <!-- Query User Section -->
+            <div class="card">
+                <div class="card-title">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+                    </svg>
+                    用戶清單與查詢
+                </div>
+                <div class="search-container">
+                    <input type="text" id="searchInput" placeholder="輸入姓名查詢..." autocomplete="off">
+                    <svg class="search-icon" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                    </svg>
+                </div>
+                <div class="user-list" id="userList">
+                    <!-- Dynamic Items will go here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification Toast -->
+    <div id="toast" class="toast">
+        <span id="toast-message"></span>
+    </div>
+
+    <script>
+        // DOM Elements
+        const addUserForm = document.getElementById('addUserForm');
+        const searchInput = document.getElementById('searchInput');
+        const userList = document.getElementById('userList');
+        const toast = document.getElementById('toast');
+        const toastMessage = document.getElementById('toast-message');
+
+        // Show toast helper
+        function showToast(message, type = 'success') {
+            toastMessage.textContent = message;
+            toast.className = `toast show toast-${type}`;
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // Fetch and render users
+        async function fetchUsers(query = '') {
+            try {
+                const url = query ? `/api/user?name=${encodeURIComponent(query)}` : '/api/user';
+                const response = await fetch(url);
+                if (!response.ok) throw new Error('無法取得用戶資料');
+                
+                const users = await response.json();
+                renderUsers(users);
+            } catch (error) {
+                console.error(error);
+                showToast(error.message, 'error');
+            }
+        }
+
+        // Render users to the list UI
+        function renderUsers(users) {
+            userList.innerHTML = '';
+            
+            if (users.length === 0) {
+                userList.innerHTML = '<div class="empty-state">找不到符合條件的用戶</div>';
+                return;
+            }
+
+            users.forEach(user => {
+                const initial = user.name ? user.name.charAt(0) : '?';
+                const item = document.createElement('div');
+                item.className = 'user-item';
+                item.innerHTML = `
+                    <div class="flex-row">
+                        <div class="user-avatar">${initial}</div>
+                        <div class="user-info">
+                            <div class="user-name">${user.name}</div>
+                            <div class="user-age">年齡: ${user.age} 歲</div>
+                        </div>
+                    </div>
+                    <button class="delete-btn" onclick="deleteUser('${user.name.replace(/'/g, "\\'")}')" title="刪除用戶">
+                        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                        </svg>
+                    </button>
+                `;
+                userList.appendChild(item);
+            });
+        }
+
+        // Add user submit handler
+        addUserForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const name = document.getElementById('name').value.trim();
+            const age = document.getElementById('age').value;
+
+            try {
+                const response = await fetch('/api/user', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ name, age })
+                });
+
+                const result = await response.json();
+                
+                if (!response.ok) {
+                    throw new Error(result.error || '新增失敗');
+                }
+
+                showToast(`成功新增用戶: ${result.user.name}`);
+                addUserForm.reset();
+                fetchUsers(searchInput.value.trim()); // Refresh list
+            } catch (error) {
+                showToast(error.message, 'error');
+            }
+        });
+
+        // Delete user handler
+        async function deleteUser(name) {
+            if (!confirm(`確定要刪除用戶 "${name}" 嗎？`)) return;
+
+            try {
+                const response = await fetch(`/api/user?name=${encodeURIComponent(name)}`, {
+                    method: 'DELETE'
+                });
+
+                const result = await response.json();
+                
+                if (!response.ok) {
+                    throw new Error(result.error || '刪除失敗');
+                }
+
+                showToast(`成功刪除用戶: ${name}`);
+                fetchUsers(searchInput.value.trim()); // Refresh list
+            } catch (error) {
+                showToast(error.message, 'error');
+            }
+        }
+
+        // Search typing handler (debounced)
+        let searchTimeout;
+        searchInput.addEventListener('input', (e) => {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => {
+                fetchUsers(e.target.value.trim());
+            }, 300);
+        });
+
+        // Initial Load
+        window.addEventListener('DOMContentLoaded', () => {
+            fetchUsers();
+        });
+    </script>
+</body>
+</html>

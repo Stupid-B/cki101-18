@@ -4,6 +4,9 @@ venv/
 ENV/
 env/
 
+# MySQL data directory
+db_data/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
