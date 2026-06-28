@@ -72,7 +72,7 @@ def index():
 
 @app.route('/user')
 def user_page():
-    # As requested: serve user management webpage at /user
+    # Serve user management webpage at /user
     return render_template('index.html')
 
 @app.route('/api/user', methods=['GET', 'POST', 'DELETE'])
@@ -142,6 +142,39 @@ def handle_user_api():
         return jsonify(result)
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+# --- GCP Storage Section ---
+
+@app.route('/gcp')
+def gcp_page():
+    # Serve GCP Cloud Storage bucket browser page
+    return render_template('gcp.html')
+
+@app.route('/api/gcp/buckets')
+def list_gcp_buckets():
+    project_id = request.args.get('project_id')
+    if not project_id:
+        return jsonify({"error": "Missing project_id parameter"}), 400
+        
+    try:
+        from google.cloud import storage
+        # Initialize storage client using specified project ID (uses ADC automatically)
+        client = storage.Client(project=project_id)
+        buckets = client.list_buckets()
+        
+        bucket_list = []
+        for bucket in buckets:
+            bucket_list.append({
+                "name": bucket.name,
+                "location": bucket.location,
+                "storage_class": bucket.storage_class,
+                "time_created": bucket.time_created.isoformat() if bucket.time_created else None
+            })
+        return jsonify(bucket_list), 200
+    except Exception as e:
+        error_msg = str(e)
+        print(f"GCS listing error: {error_msg}")
+        return jsonify({"error": error_msg}), 500
 
 if __name__ == '__main__':
     # Initialize the database on startup
